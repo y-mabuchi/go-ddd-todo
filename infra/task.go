@@ -1,9 +1,10 @@
 package infra
 
 import (
-	"github.com/y-mabuchi/go-ddd-todo/domain"
 	"log"
 	"time"
+
+	"github.com/y-mabuchi/go-ddd-todo/domain"
 )
 
 type TaskRepositoryInterface interface {

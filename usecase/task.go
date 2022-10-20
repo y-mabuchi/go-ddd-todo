@@ -1,9 +1,10 @@
 package usecase
 
 import (
+	"time"
+
 	"github.com/y-mabuchi/go-ddd-todo/domain"
 	"github.com/y-mabuchi/go-ddd-todo/infra"
-	"time"
 )
 
 type TaskUseCaseInterface interface {
