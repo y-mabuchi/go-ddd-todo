@@ -1,4 +1,4 @@
-package infrastructure
+package infra
 
 import (
 	"github.com/y-mabuchi/go-ddd-todo/domain"
@@ -20,6 +20,7 @@ func NewTaskRepository() *TaskRepository {
 
 func (t *TaskRepository) Save(task *domain.Task) error {
 	log.Println("task saved.")
+
 	return nil
 }
 
@@ -31,5 +32,6 @@ func (t *TaskRepository) FindById(id int) (*domain.Task, error) {
 		DueDate:       time.Now(),
 		PostponeCount: 0,
 	}
+
 	return task, nil
 }

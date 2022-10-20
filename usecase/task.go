@@ -1,9 +1,8 @@
 package usecase
 
 import (
-	"errors"
 	"github.com/y-mabuchi/go-ddd-todo/domain"
-	"github.com/y-mabuchi/go-ddd-todo/infrastructure"
+	"github.com/y-mabuchi/go-ddd-todo/infra"
 	"time"
 )
 
@@ -13,30 +12,22 @@ type TaskUseCaseInterface interface {
 }
 
 type TaskUseCase struct {
-	taskRepo         infrastructure.TaskRepositoryInterface
-	postponeMaxCount int
+	repo infra.TaskRepositoryInterface
 }
 
-func NewTaskUseCase(taskRepo infrastructure.TaskRepositoryInterface, postponeMaxCount int) *TaskUseCase {
+func NewTaskUseCase(taskRepo infra.TaskRepositoryInterface) *TaskUseCase {
 	return &TaskUseCase{
-		taskRepo:         taskRepo,
-		postponeMaxCount: postponeMaxCount,
+		repo: taskRepo,
 	}
 }
 
 func (t *TaskUseCase) CreateTask(name string, dueDate time.Time) error {
-	if name == "" || dueDate.IsZero() {
-		return errors.New("name or dueDate is empty")
+	task, err := domain.NewTask(name, dueDate)
+	if err != nil {
+		return err
 	}
 
-	task := &domain.Task{
-		TaskStatus:    domain.UnDone,
-		Name:          name,
-		DueDate:       dueDate,
-		PostponeCount: 0,
-	}
-
-	if err := t.taskRepo.Save(task); err != nil {
+	if err := t.repo.Save(task); err != nil {
 		return err
 	}
 
@@ -44,19 +35,16 @@ func (t *TaskUseCase) CreateTask(name string, dueDate time.Time) error {
 }
 
 func (t *TaskUseCase) PostponeTask(id int) error {
-	task, err := t.taskRepo.FindById(id)
+	task, err := t.repo.FindById(id)
 	if err != nil {
 		return err
 	}
 
-	if task.PostponeCount >= t.postponeMaxCount {
-		return errors.New("postpone count is over")
+	if err = task.Postpone(); err != nil {
+		return err
 	}
 
-	task.DueDate = task.DueDate.AddDate(0, 0, 1)
-	task.PostponeCount++
-
-	if err = t.taskRepo.Save(task); err != nil {
+	if err = t.repo.Save(task); err != nil {
 		return err
 	}
 
