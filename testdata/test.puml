@@ -1,0 +1,32 @@
+@startuml
+skinparam PackageStyle rectangle
+
+package 部集約 {
+    object "部\n<集約ルート>" as 部 {
+        部ID
+        名前
+        承認状態
+    }
+    object 部員 {
+        部ID
+        生徒ID
+    }
+    note left of 部 {
+        部活動の単位組織を表す。(野球部、ダンス部など)
+        承認状態は、最初は「未承認」であり、
+        部員が5人以上所属し、学校の承認が通ると
+        「承認済」となる。
+        部員が4人以下になると承認状態は「未承認」に戻る
+    }
+
+    部 "1" *-- "0..n" 部員
+}
+
+package 生徒集約 {
+    object "生徒\n<集約ルート>" as 生徒 {
+        生徒ID
+    }
+
+    部員 "0..n" -right-> "1" 生徒
+}
+@enduml
