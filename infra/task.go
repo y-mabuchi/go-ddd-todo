@@ -9,7 +9,7 @@ import (
 )
 
 type TaskRepositoryInterface interface {
-	Save(task *domain.Task) error
+	Save(task *domain.Task) (*domain.Task, error)
 	FindById(id int) (*domain.Task, error)
 }
 
@@ -20,10 +20,10 @@ func NewTaskRepository() *TaskRepository {
 	return &TaskRepository{}
 }
 
-func (t *TaskRepository) Save(task *domain.Task) error {
+func (t *TaskRepository) Save(task *domain.Task) (*domain.Task, error) {
 	log.Println("task saved.")
 
-	return nil
+	return task, nil
 }
 
 func (t *TaskRepository) FindById(id int) (*domain.Task, error) {

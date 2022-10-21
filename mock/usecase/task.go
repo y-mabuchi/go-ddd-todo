@@ -9,6 +9,7 @@ import (
 	time "time"
 
 	gomock "github.com/golang/mock/gomock"
+	domain "github.com/y-mabuchi/go-ddd-todo/domain"
 )
 
 // MockTaskUseCaseInterface is a mock of TaskUseCaseInterface interface.
@@ -35,11 +36,12 @@ func (m *MockTaskUseCaseInterface) EXPECT() *MockTaskUseCaseInterfaceMockRecorde
 }
 
 // CreateTask mocks base method.
-func (m *MockTaskUseCaseInterface) CreateTask(name string, dueDate time.Time) error {
+func (m *MockTaskUseCaseInterface) CreateTask(name string, dueDate time.Time) (*domain.Task, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "CreateTask", name, dueDate)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*domain.Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // CreateTask indicates an expected call of CreateTask.

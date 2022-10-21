@@ -50,11 +50,12 @@ func (mr *MockTaskRepositoryInterfaceMockRecorder) FindById(id interface{}) *gom
 }
 
 // Save mocks base method.
-func (m *MockTaskRepositoryInterface) Save(task *domain.Task) error {
+func (m *MockTaskRepositoryInterface) Save(task *domain.Task) (*domain.Task, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Save", task)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].(*domain.Task)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // Save indicates an expected call of Save.

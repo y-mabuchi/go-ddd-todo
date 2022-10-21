@@ -9,7 +9,7 @@ import (
 )
 
 type TaskUseCaseInterface interface {
-	CreateTask(name string, dueDate time.Time) error
+	CreateTask(name string, dueDate time.Time) (*domain.Task, error)
 	PostponeTask(id int) error
 }
 
@@ -23,17 +23,18 @@ func NewTaskUseCase(taskRepo infra.TaskRepositoryInterface) *TaskUseCase {
 	}
 }
 
-func (t *TaskUseCase) CreateTask(name string, dueDate time.Time) error {
+func (t *TaskUseCase) CreateTask(name string, dueDate time.Time) (*domain.Task, error) {
 	task, err := domain.NewTask(name, dueDate)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	if err := t.repo.Save(task); err != nil {
-		return err
+	task, err = t.repo.Save(task)
+	if err != nil {
+		return nil, err
 	}
 
-	return nil
+	return task, nil
 }
 
 func (t *TaskUseCase) PostponeTask(id int) error {
@@ -46,7 +47,8 @@ func (t *TaskUseCase) PostponeTask(id int) error {
 		return err
 	}
 
-	if err = t.repo.Save(task); err != nil {
+	_, err = t.repo.Save(task)
+	if err != nil {
 		return err
 	}
 
