@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"reflect"
 	"testing"
 	"time"
@@ -141,18 +142,25 @@ func TestTaskUseCase_CreateTask(t1 *testing.T) {
 func TestTaskUseCase_PostponeTask(t1 *testing.T) {
 	dueDate := time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
 	success := &domain.Task{
-		ID:            0,
+		ID:            1,
 		TaskStatus:    domain.UnDone,
 		Name:          "task test",
 		DueDate:       dueDate,
 		PostponeCount: 0,
 	}
 	postponed := &domain.Task{
-		ID:            0,
+		ID:            1,
 		TaskStatus:    domain.UnDone,
 		Name:          "task test",
 		DueDate:       dueDate.AddDate(0, 0, 1),
 		PostponeCount: 1,
+	}
+	maxOver := &domain.Task{
+		ID:            1,
+		TaskStatus:    domain.UnDone,
+		Name:          "task test",
+		DueDate:       dueDate,
+		PostponeCount: domain.PostponeMaxCount,
 	}
 
 	type fields struct {
@@ -178,6 +186,28 @@ func TestTaskUseCase_PostponeTask(t1 *testing.T) {
 				m.EXPECT().Save(success).Return(postponed, nil)
 			},
 			wantErr: false,
+		},
+		{
+			name: "postpone count is max",
+			args: args{
+				id: 1,
+			},
+			prepare: func(m *mock_infra.MockTaskRepositoryInterface) {
+				m.EXPECT().FindById(1).Return(maxOver, nil)
+				m.EXPECT().Save(gomock.Any()).AnyTimes()
+			},
+			wantErr: true,
+		},
+		{
+			name: "not found",
+			args: args{
+				id: 1,
+			},
+			prepare: func(m *mock_infra.MockTaskRepositoryInterface) {
+				m.EXPECT().FindById(1).Return(nil, errors.New("not found"))
+				m.EXPECT().Save(gomock.Any()).AnyTimes()
+			},
+			wantErr: true,
 		},
 	}
 	for _, tt := range tests {

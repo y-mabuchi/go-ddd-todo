@@ -1,6 +1,7 @@
+.DEFAULT_GOAL := help
 
 .PHONY: install
-install: install-goimports install-mockgen
+install: install-goimports install-mockgen ## install dev tools
 
 .PHONY: install-goimports
 install-goimports: ## install goimports
@@ -17,4 +18,10 @@ generate: ## generate mock
 
 .PHONY: test
 test: ## run test
-	go test -v -cover `go list ./... | grep -v mock_*`
+	go test -v -cover `go list ./... | grep -v mock_*` -coverprofile=coverage.out
+	go tool cover -html=coverage.out -o ./testdata/coverage.html
+
+.PHONY: help
+help: ## Show options
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
